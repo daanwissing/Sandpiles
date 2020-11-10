@@ -61,7 +61,7 @@ namespace Sandpiles.Calc
                         if (j < Width - 1)
                             newGrid[i][j + 1]++;
 
-                        newGrid[i][j] = oldValue - 4;
+                        newGrid[i][j] += oldValue - 4;
                         changed = true;
                     }
                     else

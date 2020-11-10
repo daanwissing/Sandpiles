@@ -71,6 +71,24 @@ namespace Sandpiles.Calc.Test
             Assert.That(sandPileGrid.Grid[1][1], Is.EqualTo(0));
         }
 
+                [Test]
+        public void Given4SandInAdjacentCell_WhenCollapse_ThenSandIsDistributed()
+        {
+            // Arrange
+            var sandPileGrid = new SandPileGrid();
+            sandPileGrid.Grid[1][1] = 4;
+            sandPileGrid.Grid[1][2] = 4;
+
+            // Act
+            sandPileGrid.Topple();
+
+            sandPileGrid.Print();
+            // Assert
+            Assert.That(sandPileGrid.Grid[1][1], Is.EqualTo(1));
+            Assert.That(sandPileGrid.Grid[1][2], Is.EqualTo(1));
+        }
+
+
         [Test]
         public void Given4SandInTopRight_WhenCollapse_ThenSandIsDistributed()
         {
