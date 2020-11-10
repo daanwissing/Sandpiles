@@ -41,7 +41,7 @@ namespace Sandpiles.Calc
             return newGrid;
         }
 
-        public bool Collapse()
+        public bool Topple()
         {
             var newGrid = InitializeGrid(Height, Width);
             var changed = false;

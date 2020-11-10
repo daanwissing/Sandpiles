@@ -40,7 +40,7 @@ namespace Sandpiles.Calc.Test
             var copy = sandPileGrid.Grid;
 
             // Act
-            sandPileGrid.Collapse();
+            sandPileGrid.Topple();
 
             // Assert
             var result = sandPileGrid.Grid;
@@ -61,7 +61,7 @@ namespace Sandpiles.Calc.Test
             sandPileGrid.Grid[1][1] = 4;
 
             // Act
-            sandPileGrid.Collapse();
+            sandPileGrid.Topple();
 
             // Assert
             Assert.That(sandPileGrid.Grid[0][1], Is.EqualTo(1));
@@ -79,7 +79,7 @@ namespace Sandpiles.Calc.Test
             sandPileGrid.Grid[0][0] = 4;
 
             // Act
-            sandPileGrid.Collapse();
+            sandPileGrid.Topple();
 
             // Assert
             Assert.That(sandPileGrid.Grid[0][0], Is.EqualTo(0));
@@ -96,7 +96,7 @@ namespace Sandpiles.Calc.Test
             sandPileGrid.Grid[2][2] = 4;
 
             // Act
-            sandPileGrid.Collapse();
+            sandPileGrid.Topple();
 
             // Assert
             Assert.That(sandPileGrid.Grid[2][2], Is.EqualTo(0));
@@ -113,10 +113,24 @@ namespace Sandpiles.Calc.Test
             sandPileGrid.Grid[2][2] = 4;
 
             // Act
-            bool changed = sandPileGrid.Collapse();
+            bool changed = sandPileGrid.Topple();
 
             // Assert
             Assert.That(changed);
+        }
+
+        [Test]
+        public void Given3Sand_WhenCollapse_ThenChangedIsFalse()
+        {
+            // Arrange
+            var sandPileGrid = new SandPileGrid();
+            sandPileGrid.Grid[2][2] = 3;
+
+            // Act
+            bool changed = sandPileGrid.Topple();
+
+            // Assert
+            Assert.That(changed, Is.EqualTo(false));
         }
     }
 }
