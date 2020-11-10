@@ -41,30 +41,38 @@ namespace Sandpiles.Calc
             return newGrid;
         }
 
-        public void Collapse()
+        public bool Collapse()
         {
             var newGrid = InitializeGrid(Height, Width);
+            var changed = false;
             for (int i = 0; i < Height; i++)
             {
                 for (int j = 0; j < Width; j++)
                 {
-                    if (Grid[i][j] > 3)
+                    var oldValue = Grid[i][j];
+                    if (oldValue > 3)
                     {
-                        newGrid[i-1][j]++;
-                        newGrid[i+1][j]++;
-                        newGrid[i][j+1]++;
-                        newGrid[i][j-1]++;
+                        if (i > 0)
+                            newGrid[i-1][j]++;
+                        if (i < Height - 1)
+                            newGrid[i+1][j]++;
+                        if (j > 0)
+                            newGrid[i][j-1]++;
+                        if (j < Width - 1)
+                            newGrid[i][j+1]++;
 
-                        newGrid[i][j] = Grid[i][j] - 4;
+                        newGrid[i][j] = oldValue - 4;
+                        changed = true;
                     }
                     else
                     {
-                        newGrid[i][j] += Grid[i][j];
+                        newGrid[i][j] += oldValue;
                     }
                 }
             }
             
             _grid = newGrid;
+            return changed;
         }
     }
 }

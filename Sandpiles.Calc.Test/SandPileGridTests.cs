@@ -22,7 +22,7 @@ namespace Sandpiles.Calc.Test
         public void GivenDimensions_WhenNewGrid_ThenGridHasGivenDimensions()
         {
             // Arrange
-            var sandPileGrid = new SandPileGrid(6,9);
+            var sandPileGrid = new SandPileGrid(6, 9);
 
             // Act
             var grid = sandPileGrid.Grid;
@@ -36,7 +36,7 @@ namespace Sandpiles.Calc.Test
         public void GivenEmptyGrid_WhenCollapse_ThenGridIsSame()
         {
             // Arrange
-            var sandPileGrid = new SandPileGrid(6,9);
+            var sandPileGrid = new SandPileGrid(6, 9);
             var copy = sandPileGrid.Grid;
 
             // Act
@@ -44,7 +44,7 @@ namespace Sandpiles.Calc.Test
 
             // Assert
             var result = sandPileGrid.Grid;
-            for(int i = 0; i < copy.Length; i++)
+            for (int i = 0; i < copy.Length; i++)
             {
                 for (int j = 0; j < copy[i].Length; j++)
                 {
@@ -54,9 +54,9 @@ namespace Sandpiles.Calc.Test
         }
 
         [Test]
-        public void Given4SandInCell_WhenCollapse_ThenSandIsDistributed()
+        public void Given4SandInMiddleCell_WhenCollapse_ThenSandIsDistributed()
         {
-                        // Arrange
+            // Arrange
             var sandPileGrid = new SandPileGrid();
             sandPileGrid.Grid[1][1] = 4;
 
@@ -69,6 +69,54 @@ namespace Sandpiles.Calc.Test
             Assert.That(sandPileGrid.Grid[1][2], Is.EqualTo(1));
             Assert.That(sandPileGrid.Grid[2][1], Is.EqualTo(1));
             Assert.That(sandPileGrid.Grid[1][1], Is.EqualTo(0));
+        }
+
+        [Test]
+        public void Given4SandInTopRight_WhenCollapse_ThenSandIsDistributed()
+        {
+            // Arrange
+            var sandPileGrid = new SandPileGrid();
+            sandPileGrid.Grid[0][0] = 4;
+
+            // Act
+            sandPileGrid.Collapse();
+
+            // Assert
+            Assert.That(sandPileGrid.Grid[0][0], Is.EqualTo(0));
+            Assert.That(sandPileGrid.Grid[1][0], Is.EqualTo(1));
+            Assert.That(sandPileGrid.Grid[0][1], Is.EqualTo(1));
+            Assert.That(sandPileGrid.Grid[1][1], Is.EqualTo(0));
+        }
+
+        [Test]
+        public void Given4SandInBottomLeft_WhenCollapse_ThenSandIsDistributed()
+        {
+            // Arrange
+            var sandPileGrid = new SandPileGrid();
+            sandPileGrid.Grid[2][2] = 4;
+
+            // Act
+            sandPileGrid.Collapse();
+
+            // Assert
+            Assert.That(sandPileGrid.Grid[2][2], Is.EqualTo(0));
+            Assert.That(sandPileGrid.Grid[1][2], Is.EqualTo(1));
+            Assert.That(sandPileGrid.Grid[2][1], Is.EqualTo(1));
+            Assert.That(sandPileGrid.Grid[1][1], Is.EqualTo(0));
+        }
+
+        [Test]
+        public void Given4Sand_WhenCollapse_ThenChangedIsTrue()
+        {
+            // Arrange
+            var sandPileGrid = new SandPileGrid();
+            sandPileGrid.Grid[2][2] = 4;
+
+            // Act
+            bool changed = sandPileGrid.Collapse();
+
+            // Assert
+            Assert.That(changed);
         }
     }
 }
