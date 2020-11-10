@@ -53,13 +53,13 @@ namespace Sandpiles.Calc
                     if (oldValue > 3)
                     {
                         if (i > 0)
-                            newGrid[i-1][j]++;
+                            newGrid[i - 1][j]++;
                         if (i < Height - 1)
-                            newGrid[i+1][j]++;
+                            newGrid[i + 1][j]++;
                         if (j > 0)
-                            newGrid[i][j-1]++;
+                            newGrid[i][j - 1]++;
                         if (j < Width - 1)
-                            newGrid[i][j+1]++;
+                            newGrid[i][j + 1]++;
 
                         newGrid[i][j] = oldValue - 4;
                         changed = true;
@@ -70,9 +70,21 @@ namespace Sandpiles.Calc
                     }
                 }
             }
-            
+
             _grid = newGrid;
             return changed;
+        }
+
+        public void Print()
+        {
+            for (int i = 0; i < Height; i++)
+            {
+                for (int j = 0; j < Width; j++)
+                {
+                    Console.Write(_grid[i][j]);
+                }
+                Console.WriteLine();
+            }
         }
     }
 }
