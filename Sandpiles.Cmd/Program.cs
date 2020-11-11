@@ -88,6 +88,16 @@ namespace Sandpiles.Cmd
                 settings.Seed = Convert.ToInt32(GetArgumentValue(args, "-s"));
             }
 
+            if (args.Contains("-p"))
+            {
+                settings.PrintConsole = true;
+            }
+
+            if (args.Contains("-i"))
+            {
+                settings.SaveIntermediateImage = true;
+            }
+
             return settings;
         }
 
