@@ -16,30 +16,32 @@ namespace Sandpiles.Cmd
             pile.Grid[settings.Height / 2][settings.Width / 2] = settings.Seed;
 
             var iterations = 0;
-            Console.Clear();
-            var sw = Stopwatch.StartNew();
+            var totalTime = Stopwatch.StartNew();
+            var intervalTime = Stopwatch.StartNew();
             while (pile.ToppleInPlace())
             {
                 iterations++;
                 if (iterations % 1000 == 0)
                 {
+                    Console.Clear();
+                    Console.SetCursorPosition(0, 0);
                     Console.WriteLine($"Iteration {iterations}");
-                    Console.WriteLine($"Time: {sw.Elapsed}");
-                    Console.WriteLine($"Iterations/s: {1000 * (decimal)iterations / sw.ElapsedMilliseconds}");
+                    Console.WriteLine($"Time: {totalTime.Elapsed}");
+                    Console.WriteLine($"Iterations/s: {1000 * (decimal)iterations / intervalTime.ElapsedMilliseconds:#.###}");
+                    intervalTime.Restart();
                     if (settings.SaveIntermediateImage)
                         SaveImage(pile);
-                    Console.SetCursorPosition(0, 0);
                 }
             }
-            sw.Stop();
+            totalTime.Stop();
 
             if (settings.PrintConsole)
                 pile.Print();
-            
+
             Console.WriteLine($"Total iterations: {iterations}");
-            Console.WriteLine($"Total Time: {sw.Elapsed}");
-            Console.WriteLine($"Iterations/s: {1000 * (decimal)iterations / sw.ElapsedMilliseconds}");
-            
+            Console.WriteLine($"Total Time: {totalTime.Elapsed}");
+            Console.WriteLine($"Iterations/s: {1000 * (decimal)iterations / totalTime.ElapsedMilliseconds}");
+
             if (settings.SaveFinalImage)
                 SaveImage(pile);
         }
@@ -67,7 +69,7 @@ namespace Sandpiles.Cmd
                 1 => Color.Red,
                 2 => Color.Orange,
                 3 => Color.White,
-                _ => throw new Exception("NOT POSSIBLE")
+                _ => Color.Green,
             };
         }
 
@@ -114,6 +116,8 @@ namespace Sandpiles.Cmd
             public bool PrintConsole { get; set; } = false;
             public bool SaveIntermediateImage { get; set; } = false;
             public bool SaveFinalImage { get; set; } = true;
+
+            public string Filename { get; set; }
         }
     }
 }
