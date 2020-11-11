@@ -21,16 +21,17 @@ namespace Sandpiles.Cmd
             while (pile.ToppleInPlace())
             {
                 iterations++;
-                if (iterations % 1000 == 0)
+                var iterationSkip = 1000;
+                if (iterations % iterationSkip == 0)
                 {
                     Console.Clear();
                     Console.SetCursorPosition(0, 0);
                     Console.WriteLine($"Iteration {iterations}");
                     Console.WriteLine($"Time: {totalTime.Elapsed}");
-                    Console.WriteLine($"Iterations/s: {1000 * (decimal)iterations / intervalTime.ElapsedMilliseconds:#.###}");
-                    intervalTime.Restart();
+                    Console.WriteLine($"Iterations/s: {1000 * (decimal)iterationSkip / intervalTime.ElapsedMilliseconds:#.###}");
                     if (settings.SaveIntermediateImage)
                         SaveImage(pile);
+                    intervalTime.Restart();
                 }
             }
             totalTime.Stop();
@@ -40,7 +41,7 @@ namespace Sandpiles.Cmd
 
             Console.WriteLine($"Total iterations: {iterations}");
             Console.WriteLine($"Total Time: {totalTime.Elapsed}");
-            Console.WriteLine($"Iterations/s: {1000 * (decimal)iterations / totalTime.ElapsedMilliseconds}");
+            Console.WriteLine($"Iterations/s: {1000 * (decimal)iterations / totalTime.ElapsedMilliseconds:#.###}");
 
             if (settings.SaveFinalImage)
                 SaveImage(pile);
@@ -66,10 +67,11 @@ namespace Sandpiles.Cmd
             return i switch
             {
                 0 => Color.Black,
-                1 => Color.Red,
-                2 => Color.Orange,
-                3 => Color.White,
-                _ => Color.Green,
+                1 => Color.DarkRed,
+                2 => Color.Red,
+                3 => Color.OrangeRed,
+                4 => Color.Orange,
+                _ => Color.White,
             };
         }
 
