@@ -33,7 +33,7 @@ namespace Sandpiles.Calc.Test
         }
 
         [Test]
-        public void GivenEmptyGrid_WhenCollapse_ThenGridIsSame()
+        public void GivenEmptyGrid_WhenTopple_ThenGridIsSame()
         {
             // Arrange
             var sandPileGrid = new SandPileGrid(6, 9);
@@ -54,7 +54,7 @@ namespace Sandpiles.Calc.Test
         }
 
         [Test]
-        public void Given4SandInMiddleCell_WhenCollapse_ThenSandIsDistributed()
+        public void Given4SandInMiddleCell_WhenTopple_ThenSandIsDistributed()
         {
             // Arrange
             var sandPileGrid = new SandPileGrid();
@@ -71,8 +71,27 @@ namespace Sandpiles.Calc.Test
             Assert.That(sandPileGrid.Grid[1][1], Is.EqualTo(0));
         }
 
-                [Test]
-        public void Given4SandInAdjacentCell_WhenCollapse_ThenSandIsDistributed()
+        [Test]
+        public void Given8SandInMiddleCell_WhenTopple_ThenSandIsDistributed()
+        {
+            // Arrange
+            var sandPileGrid = new SandPileGrid();
+            sandPileGrid.Grid[1][1] = 8;
+
+            // Act
+            sandPileGrid.Topple();
+
+            // Assert
+            Assert.That(sandPileGrid.Grid[0][1], Is.EqualTo(2));
+            Assert.That(sandPileGrid.Grid[1][0], Is.EqualTo(2));
+            Assert.That(sandPileGrid.Grid[1][2], Is.EqualTo(2));
+            Assert.That(sandPileGrid.Grid[2][1], Is.EqualTo(2));
+            Assert.That(sandPileGrid.Grid[1][1], Is.EqualTo(0));
+        }
+
+
+        [Test]
+        public void Given4SandInAdjacentCell_WhenTopple_ThenSandIsDistributed()
         {
             // Arrange
             var sandPileGrid = new SandPileGrid();
@@ -82,7 +101,6 @@ namespace Sandpiles.Calc.Test
             // Act
             sandPileGrid.Topple();
 
-            sandPileGrid.Print();
             // Assert
             Assert.That(sandPileGrid.Grid[1][1], Is.EqualTo(1));
             Assert.That(sandPileGrid.Grid[1][2], Is.EqualTo(1));
@@ -90,7 +108,7 @@ namespace Sandpiles.Calc.Test
 
 
         [Test]
-        public void Given4SandInTopRight_WhenCollapse_ThenSandIsDistributed()
+        public void Given4SandInTopRight_WhenTopple_ThenSandIsDistributed()
         {
             // Arrange
             var sandPileGrid = new SandPileGrid();
@@ -107,7 +125,7 @@ namespace Sandpiles.Calc.Test
         }
 
         [Test]
-        public void Given4SandInBottomLeft_WhenCollapse_ThenSandIsDistributed()
+        public void Given4SandInBottomLeft_WhenTopple_ThenSandIsDistributed()
         {
             // Arrange
             var sandPileGrid = new SandPileGrid();
@@ -124,7 +142,7 @@ namespace Sandpiles.Calc.Test
         }
 
         [Test]
-        public void Given4Sand_WhenCollapse_ThenChangedIsTrue()
+        public void Given4Sand_WhenTopple_ThenChangedIsTrue()
         {
             // Arrange
             var sandPileGrid = new SandPileGrid();
@@ -138,7 +156,7 @@ namespace Sandpiles.Calc.Test
         }
 
         [Test]
-        public void Given3Sand_WhenCollapse_ThenChangedIsFalse()
+        public void Given3Sand_WhenTopple_ThenChangedIsFalse()
         {
             // Arrange
             var sandPileGrid = new SandPileGrid();
@@ -149,6 +167,58 @@ namespace Sandpiles.Calc.Test
 
             // Assert
             Assert.That(changed, Is.EqualTo(false));
+        }
+        [Test]
+        public void Given4SandInMiddleCell_WhenToppleInPlace_ThenSandIsDistributed()
+        {
+            // Arrange
+            var sandPileGrid = new SandPileGrid();
+            sandPileGrid.Grid[1][1] = 4;
+
+            // Act
+            sandPileGrid.ToppleInPlace();
+
+            // Assert
+            Assert.That(sandPileGrid.Grid[0][1], Is.EqualTo(1));
+            Assert.That(sandPileGrid.Grid[1][0], Is.EqualTo(1));
+            Assert.That(sandPileGrid.Grid[1][2], Is.EqualTo(1));
+            Assert.That(sandPileGrid.Grid[2][1], Is.EqualTo(1));
+            Assert.That(sandPileGrid.Grid[1][1], Is.EqualTo(0));
+        }
+
+        [Test]
+        public void Given8SandInMiddleCell_WhenToppleInPlace_ThenSandIsDistributed()
+        {
+            // Arrange
+            var sandPileGrid = new SandPileGrid();
+            sandPileGrid.Grid[1][1] = 8;
+
+            // Act
+            sandPileGrid.ToppleInPlace();
+
+            // Assert
+            Assert.That(sandPileGrid.Grid[0][1], Is.EqualTo(2));
+            Assert.That(sandPileGrid.Grid[1][0], Is.EqualTo(2));
+            Assert.That(sandPileGrid.Grid[1][2], Is.EqualTo(2));
+            Assert.That(sandPileGrid.Grid[2][1], Is.EqualTo(2));
+            Assert.That(sandPileGrid.Grid[1][1], Is.EqualTo(0));
+        }
+
+
+        [Test]
+        public void Given4SandInAdjacentCell_WhenToppleInPlace_ThenSandIsDistributed()
+        {
+            // Arrange
+            var sandPileGrid = new SandPileGrid();
+            sandPileGrid.Grid[1][1] = 4;
+            sandPileGrid.Grid[1][2] = 4;
+
+            // Act
+            sandPileGrid.ToppleInPlace();
+
+            // Assert
+            Assert.That(sandPileGrid.Grid[1][1], Is.EqualTo(1));
+            Assert.That(sandPileGrid.Grid[1][2], Is.EqualTo(1));
         }
     }
 }
