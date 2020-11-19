@@ -13,7 +13,7 @@ namespace Sandpiles.Cmd
         {
             var settings = ParseArgs(args);
             var pile = new SandPileGrid(settings.Height, settings.Width);
-            pile.Grid[settings.Height / 2][settings.Width / 2] = settings.Seed;
+            SetSeed(settings, pile);
 
             var iterations = 0;
             var totalTime = Stopwatch.StartNew();
@@ -30,7 +30,7 @@ namespace Sandpiles.Cmd
                     Console.WriteLine($"Time: {totalTime.Elapsed}");
                     Console.WriteLine($"Iterations/s: {1000 * (decimal)iterationSkip / intervalTime.ElapsedMilliseconds:#.###}");
                     if (settings.SaveIntermediateImage)
-                        SaveImage(pile);
+                        SaveImage(pile, settings.Filename);
                     intervalTime.Restart();
                 }
             }
@@ -41,13 +41,26 @@ namespace Sandpiles.Cmd
 
             Console.WriteLine($"Total iterations: {iterations}");
             Console.WriteLine($"Total Time: {totalTime.Elapsed}");
-            Console.WriteLine($"Iterations/s: {1000 * (decimal)iterations / totalTime.ElapsedMilliseconds:#.###}");
+            string speed = (totalTime.ElapsedMilliseconds == 0)
+                ? "INFINITE!"
+                : (1000 * (decimal)iterations / totalTime.ElapsedMilliseconds).ToString("#:###");
+
+            Console.WriteLine($"Iterations/s: {speed}");
 
             if (settings.SaveFinalImage)
-                SaveImage(pile);
+                SaveImage(pile, settings.Filename);
         }
 
-        private static void SaveImage(SandPileGrid pile)
+        private static void SetSeed(PileSettings settings, SandPileGrid pile)
+        {
+            pile.Grid[settings.Height / 2][settings.Width / 2] = settings.Seed;
+            // pile.Grid[settings.Height / 3][settings.Width / 3] = settings.Seed / 4;
+            // pile.Grid[settings.Height * 2 / 3][settings.Width / 3] = settings.Seed / 4;
+            // pile.Grid[settings.Height / 3][settings.Width * 2 / 3] = settings.Seed / 4;
+            // pile.Grid[settings.Height * 2 / 3][settings.Width * 2 / 3] = settings.Seed / 4;
+        }
+
+        private static void SaveImage(SandPileGrid pile, string fileName)
         {
             using (var bmp = new Bitmap(pile.Height, pile.Width))
             {
@@ -58,19 +71,19 @@ namespace Sandpiles.Cmd
                         bmp.SetPixel(i, j, GetColor(pile.Grid[i][j]));
                     }
                 }
-                bmp.Save("out.bmp");
+                bmp.Save(fileName);
             }
         }
 
-        static Color GetColor(int i)
+        private static Color GetColor(int i)
         {
             return i switch
             {
                 0 => Color.Black,
-                1 => Color.DarkRed,
-                2 => Color.Red,
-                3 => Color.OrangeRed,
-                4 => Color.Orange,
+                1 => Color.Red,
+                2 => Color.Orange,
+                3 => Color.Yellow,
+                4 => Color.LightYellow,
                 _ => Color.White,
             };
         }
@@ -79,28 +92,24 @@ namespace Sandpiles.Cmd
         {
             var settings = new PileSettings();
             if (args.Contains("-h"))
-            {
                 settings.Height = Convert.ToInt32(GetArgumentValue(args, "-h"));
-            }
+
             if (args.Contains("-w"))
-            {
                 settings.Width = Convert.ToInt32(GetArgumentValue(args, "-w"));
-            }
 
             if (args.Contains("-s"))
-            {
                 settings.Seed = Convert.ToInt32(GetArgumentValue(args, "-s"));
-            }
 
             if (args.Contains("-p"))
-            {
                 settings.PrintConsole = true;
-            }
 
             if (args.Contains("-i"))
-            {
                 settings.SaveIntermediateImage = true;
-            }
+
+            if (args.Contains("-f"))
+                settings.Filename = GetArgumentValue(args, "-f");
+            else
+                settings.Filename = $"{DateTime.Now:yyyyMMdd-HHmmss}_{settings.Height}x{settings.Width}_{settings.Seed}.bmp";
 
             return settings;
         }
