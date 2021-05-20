@@ -25,19 +25,24 @@ namespace Sandpiles.Wpf
         public MainWindow()
         {
             InitializeComponent();
-            bmpLive = new Bitmap((int)DrawCanvas.Width, (int)DrawCanvas.Height);
-            bmpLast = (Bitmap)bmpLive.Clone();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             StartButton.IsEnabled = false;
-            pile = new SandPileGrid((int)DrawCanvas.Height, (int)DrawCanvas.Width);
+
+            var dimension = Convert.ToInt32(size.Text);
+            DrawCanvas.Height = dimension;
+            DrawCanvas.Width = dimension;
+            bmpLive = new Bitmap(dimension, dimension);
+            bmpLast = (Bitmap)bmpLive.Clone();
+
+            pile = new SandPileGrid(dimension, dimension);
             var settings = new PileSettings
             {
                 PrintConsole = false,
-                Height = (int)DrawCanvas.Height,
-                Width = (int)DrawCanvas.Width,
+                Height = dimension,
+                Width = dimension,
                 Seed = Convert.ToInt32(seed.Text)
             };
             pile.SetSeed(settings);
@@ -93,8 +98,8 @@ namespace Sandpiles.Wpf
                         DrawImg.Source = BmpImageFromBmp(bmpLast);
                         iterations.Content = iteration;
                         time.Content = totalTime.Elapsed.ToString(@"hh\:mm\:ss\.fff");
-                        ips.Content = iterationsPerSecond.ToString("#.###");
-                        fps.Content = framespersecond.ToString("#.###");
+                        ips.Content = iterationsPerSecond.ToString("0.000");
+                        fps.Content = framespersecond.ToString("0.000");
                     });
                 }
                 lastIteration = iteration;

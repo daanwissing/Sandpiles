@@ -5,12 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Sandpiles.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="600">
-    <Grid>
+        Title="MainWindow" Height="450" Width="600"
+        SizeToContent="WidthAndHeight">
+    <Grid >
         <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
             <ColumnDefinition Width="auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+        </Grid.RowDefinitions>
         <Canvas Grid.Column="0" Height="400" Width="400" Top="0" Left="0" Name="DrawCanvas">
             <Image Name="DrawImg"></Image>
         </Canvas>
@@ -30,15 +34,17 @@
             </Grid.RowDefinitions>
             <Button x:Name="StartButton" Grid.Column="0" Grid.Row="0" Height="20" Width="40" Click="Button_Click">Start</Button>
             <Label Grid.Column="0" Grid.Row="1">Iterations:</Label>
-            <Label Grid.Column="1" Grid.Row="1" Name="iterations"></Label>
+            <Label Grid.Column="1" Grid.Row="1" Name="iterations" HorizontalContentAlignment="right"></Label>
             <Label Grid.Column="0" Grid.Row="2">Time:</Label>
-            <Label Grid.Column="1" Grid.Row="2" Name="time"></Label>
+            <Label Grid.Column="1" Grid.Row="2" Name="time" HorizontalContentAlignment="right"></Label>
             <Label Grid.Column="0" Grid.Row="3">IPS:</Label>
-            <Label Grid.Column="1" Grid.Row="3" Name="ips"></Label>
+            <Label Grid.Column="1" Grid.Row="3" Name="ips" HorizontalContentAlignment="right"></Label>
             <Label Grid.Column="0" Grid.Row="4">FPS:</Label>
-            <Label Grid.Column="1" Grid.Row="4" Name="fps"></Label>
+            <Label Grid.Column="1" Grid.Row="4" Name="fps" HorizontalContentAlignment="right"></Label>
             <Label Grid.Column="0" Grid.Row="5">Seed:</Label>
             <TextBox Grid.Column="1" Grid.Row="5" Name="seed">100000</TextBox>
+            <Label Grid.Column="0" Grid.Row="6">Size:</Label>
+            <TextBox Grid.Column="1" Grid.Row="6" Name="size">400</TextBox>
         </Grid>
     </Grid>
 </Window>
