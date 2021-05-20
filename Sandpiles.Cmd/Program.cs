@@ -6,14 +6,13 @@ using System.Drawing;
 
 namespace Sandpiles.Cmd
 {
-    class Program
+    partial class Program
     {
-
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var settings = ParseArgs(args);
             var pile = new SandPileGrid(settings.Height, settings.Width);
-            SetSeed(settings, pile);
+            pile.SetSeed(settings);
 
             var iterations = 0;
             var totalTime = Stopwatch.StartNew();
@@ -51,15 +50,6 @@ namespace Sandpiles.Cmd
                 SaveImage(pile, settings.Filename);
         }
 
-        private static void SetSeed(PileSettings settings, SandPileGrid pile)
-        {
-            pile.Grid[settings.Height / 2][settings.Width / 2] = settings.Seed;
-            // pile.Grid[settings.Height / 3][settings.Width / 3] = settings.Seed / 4;
-            // pile.Grid[settings.Height * 2 / 3][settings.Width / 3] = settings.Seed / 4;
-            // pile.Grid[settings.Height / 3][settings.Width * 2 / 3] = settings.Seed / 4;
-            // pile.Grid[settings.Height * 2 / 3][settings.Width * 2 / 3] = settings.Seed / 4;
-        }
-
         private static void SaveImage(SandPileGrid pile, string fileName)
         {
             using (var bmp = new Bitmap(pile.Height, pile.Width))
@@ -75,9 +65,9 @@ namespace Sandpiles.Cmd
             }
         }
 
-        private static Color GetColor(int i)
+        private static Color GetColor(int grains)
         {
-            return i switch
+            return grains switch
             {
                 0 => Color.Black,
                 1 => Color.Red,
@@ -88,7 +78,7 @@ namespace Sandpiles.Cmd
             };
         }
 
-        static PileSettings ParseArgs(string[] args)
+        private static PileSettings ParseArgs(string[] args)
         {
             var settings = new PileSettings();
             if (args.Contains("-h"))
@@ -117,18 +107,6 @@ namespace Sandpiles.Cmd
         private static string GetArgumentValue(string[] args, string argument)
         {
             return args.SkipWhile(a => a != argument).Skip(1).First();
-        }
-
-        internal class PileSettings
-        {
-            public int Height { get; set; } = 100;
-            public int Width { get; set; } = 100;
-            public int Seed { get; set; } = 1000;
-            public bool PrintConsole { get; set; } = false;
-            public bool SaveIntermediateImage { get; set; } = false;
-            public bool SaveFinalImage { get; set; } = true;
-
-            public string Filename { get; set; }
         }
     }
 }

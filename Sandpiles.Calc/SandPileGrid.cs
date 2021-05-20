@@ -8,7 +8,6 @@ namespace Sandpiles.Calc
         public readonly int Height;
         public readonly int Width;
 
-
         public int[][] Grid
         {
             get
@@ -63,7 +62,6 @@ namespace Sandpiles.Calc
 
                         _grid[i][j] = oldValue % 4;
                         changed = true;
-
                     }
                 }
             }
@@ -73,7 +71,7 @@ namespace Sandpiles.Calc
 
         public bool Topple()
         {
-            var newGrid =  InitializeGrid(Height, Width);
+            var newGrid = InitializeGrid(Height, Width);
             var changed = false;
             for (int i = 0; i < Height; i++)
             {
@@ -116,6 +114,11 @@ namespace Sandpiles.Calc
                 }
                 Console.WriteLine();
             }
+        }
+
+        public void SetSeed(PileSettings settings)
+        {
+            Grid[settings.Height / 2][settings.Width / 2] = settings.Seed;
         }
     }
 }
