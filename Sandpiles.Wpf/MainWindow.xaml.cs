@@ -1,4 +1,5 @@
 ﻿using Sandpiles.Calc;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
@@ -19,6 +20,8 @@ namespace Sandpiles.Wpf
 
         private static bool isCalculating = false;
 
+        private int iteration = 0;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -35,22 +38,24 @@ namespace Sandpiles.Wpf
                 PrintConsole = false,
                 Height = (int)DrawCanvas.Height,
                 Width = (int)DrawCanvas.Width,
-                Seed = 100_000
+                Seed = Convert.ToInt32(seed.Text)
             };
             pile.SetSeed(settings);
 
-            var renderThread = new Thread(new ThreadStart(Render));
-            renderThread.Start();
-
             var calcThread = new Thread(new ThreadStart(Calculate));
+            var renderThread = new Thread(new ThreadStart(Render));
+
             calcThread.Start();
+            renderThread.Start();
         }
 
         private void Calculate()
         {
             isCalculating = true;
+            iteration = 0;
             while (pile.ToppleInPlace())
             {
+                iteration++;
             };
             isCalculating = false;
             Dispatcher.Invoke(() =>
@@ -62,8 +67,10 @@ namespace Sandpiles.Wpf
         private void Render()
         {
             int frame = 0;
+            int lastIteration = 0;
             var totalTime = Stopwatch.StartNew();
             var intervalTime = Stopwatch.StartNew();
+
             while (isCalculating)
             {
                 frame++;
@@ -79,17 +86,19 @@ namespace Sandpiles.Wpf
                 {
                     bmpLast.Dispose();
                     bmpLast = (Bitmap)bmpLive.Clone();
+                    var iterationsPerSecond = 1000 * (decimal)(iteration - lastIteration) / intervalTime.ElapsedMilliseconds;
+                    var framespersecond = (decimal)1000 / intervalTime.ElapsedMilliseconds;
                     Dispatcher.Invoke(() =>
                     {
                         DrawImg.Source = BmpImageFromBmp(bmpLast);
-                        iterations.Content = frame;
-                        time.Content = totalTime.Elapsed.ToString();
+                        iterations.Content = iteration;
+                        time.Content = totalTime.Elapsed.ToString(@"hh\:mm\:ss\.fff");
+                        ips.Content = iterationsPerSecond.ToString("#.###");
+                        fps.Content = framespersecond.ToString("#.###");
                     });
                 }
-                if (frame % 10_000 == 0)
-                {
-                    intervalTime.Restart();
-                }
+                lastIteration = iteration;
+                intervalTime.Restart();
             }
         }
 
