@@ -1,9 +1,10 @@
 ﻿using Sandpiles.Calc;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Threading;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace Sandpiles.Wpf
@@ -13,14 +14,13 @@ namespace Sandpiles.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
-        private SandPileGrid pile;
+        private SandPileGrid Pile;
 
-        private static Bitmap bmpLive;
-        private static Bitmap bmpLast;
+        private static WriteableBitmap Bitmap;
 
         private static bool isCalculating = false;
 
-        private int iteration = 0;
+        private int Iteration = 0;
 
         public MainWindow()
         {
@@ -34,10 +34,9 @@ namespace Sandpiles.Wpf
             var dimension = Convert.ToInt32(size.Text);
             DrawCanvas.Height = dimension;
             DrawCanvas.Width = dimension;
-            bmpLive = new Bitmap(dimension, dimension);
-            bmpLast = (Bitmap)bmpLive.Clone();
-
-            pile = new SandPileGrid(dimension, dimension);
+            Bitmap = new WriteableBitmap(dimension, dimension, 96, 96, PixelFormats.Bgr32, null);
+            DrawImg.Source = Bitmap;
+            Pile = new SandPileGrid(dimension, dimension);
             var settings = new PileSettings
             {
                 PrintConsole = false,
@@ -45,7 +44,7 @@ namespace Sandpiles.Wpf
                 Width = dimension,
                 Seed = Convert.ToInt32(seed.Text)
             };
-            pile.SetSeed(settings);
+            Pile.SetSeed(settings);
 
             var calcThread = new Thread(new ThreadStart(Calculate));
             var renderThread = new Thread(new ThreadStart(Render));
@@ -57,10 +56,10 @@ namespace Sandpiles.Wpf
         private void Calculate()
         {
             isCalculating = true;
-            iteration = 0;
-            while (pile.ToppleInPlace())
+            Iteration = 0;
+            while (Pile.ToppleInPlace())
             {
-                iteration++;
+                Iteration++;
             };
             isCalculating = false;
             Dispatcher.Invoke(() =>
@@ -79,30 +78,34 @@ namespace Sandpiles.Wpf
             while (isCalculating)
             {
                 frame++;
-                for (var x = 0; x < pile.Width; x++)
+                byte[] pixels = new byte[Pile.Width * Pile.Height * 4];
+                for (var x = 0; x < Pile.Width; x++)
                 {
-                    for (var y = 0; y < pile.Height; y++)
+                    for (var y = 0; y < Pile.Height; y++)
                     {
-                        bmpLive.SetPixel(x, y, GetColor(pile.Grid[x][y]));
+                        var color = GetColor(Pile.Grid[x][y]);
+                        var offset = (4 * y) + (4 * x * Pile.Width);
+                        pixels[offset] = color.B;
+                        pixels[offset + 1] = color.G;
+                        pixels[offset + 2] = color.R;
+                        pixels[offset + 3] = color.A;
                     }
                 }
 
-                lock (bmpLast)
+                lock (Bitmap)
                 {
-                    bmpLast.Dispose();
-                    bmpLast = (Bitmap)bmpLive.Clone();
-                    var iterationsPerSecond = 1000 * (decimal)(iteration - lastIteration) / intervalTime.ElapsedMilliseconds;
+                    var iterationsPerSecond = 1000 * (decimal)(Iteration - lastIteration) / intervalTime.ElapsedMilliseconds;
                     var framespersecond = (decimal)1000 / intervalTime.ElapsedMilliseconds;
                     Dispatcher.Invoke(() =>
                     {
-                        DrawImg.Source = BmpImageFromBmp(bmpLast);
-                        iterations.Content = iteration;
+                        Bitmap.WritePixels(new Int32Rect(0, 0, Pile.Width - 1, Pile.Height - 1), pixels, Bitmap.BackBufferStride, 0, 0);
+                        iterations.Content = Iteration;
                         time.Content = totalTime.Elapsed.ToString(@"hh\:mm\:ss\.fff");
                         ips.Content = iterationsPerSecond.ToString("0.000");
                         fps.Content = framespersecond.ToString("0.000");
                     });
                 }
-                lastIteration = iteration;
+                lastIteration = Iteration;
                 intervalTime.Restart();
             }
         }
@@ -111,31 +114,13 @@ namespace Sandpiles.Wpf
         {
             return grains switch
             {
-                0 => Color.Black,
-                1 => Color.Red,
-                2 => Color.Orange,
-                3 => Color.Yellow,
-                4 => Color.LightYellow,
-                _ => Color.White,
+                0 => Color.FromRgb(0, 0, 0),
+                1 => Color.FromRgb(255, 0, 0),
+                2 => Color.FromRgb(255, 127, 0),
+                3 => Color.FromRgb(255, 255, 0),
+                4 => Color.FromRgb(255, 255, 127),
+                _ => Color.FromRgb(255, 255, 255),
             };
-        }
-
-        private static BitmapImage BmpImageFromBmp(Bitmap bmp)
-        {
-            using (var memory = new System.IO.MemoryStream())
-            {
-                bmp.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
-                memory.Position = 0;
-
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memory;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
-
-                return bitmapImage;
-            }
         }
     }
 }
