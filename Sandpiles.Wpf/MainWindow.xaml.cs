@@ -25,6 +25,15 @@ namespace Sandpiles.Wpf
         private CancellationTokenSource CancelDrawToken;
         private CancellationTokenSource CancelCalcToken;
 
+        private readonly Color[] colors = new[] {
+                Color.FromRgb(0, 0, 0),
+                Color.FromRgb(255, 0, 0),
+                Color.FromRgb(255, 127, 0),
+                Color.FromRgb(255, 255, 0),
+                Color.FromRgb(255, 255, 127),
+                Color.FromRgb(255, 255, 255),
+        };
+
         public MainWindow()
         {
             InitializeComponent();
@@ -115,7 +124,7 @@ namespace Sandpiles.Wpf
             {
                 for (var y = 0; y < Pile.Height; y++)
                 {
-                    var color = GetColor(Pile.Grid[x][y]);
+                    var color = colors[Math.Min(Pile.Grid[x][y], 5)];
                     var offset = (4 * y) + (4 * x * Pile.Width);
                     pixels[offset] = color.B;
                     pixels[offset + 1] = color.G;
