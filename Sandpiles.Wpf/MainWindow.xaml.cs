@@ -1,6 +1,5 @@
 ﻿using Sandpiles.Calc;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows;
@@ -25,14 +24,7 @@ namespace Sandpiles.Wpf
         private CancellationTokenSource CancelDrawToken;
         private CancellationTokenSource CancelCalcToken;
 
-        private readonly Color[] colors = new[] {
-                Color.FromRgb(0, 0, 0),
-                Color.FromRgb(255, 0, 0),
-                Color.FromRgb(255, 127, 0),
-                Color.FromRgb(255, 255, 0),
-                Color.FromRgb(255, 255, 127),
-                Color.FromRgb(255, 255, 255),
-        };
+        private Color[] colors;
 
         public MainWindow()
         {
@@ -57,13 +49,25 @@ namespace Sandpiles.Wpf
                 Seed = Convert.ToInt32(seed.Text)
             };
             Pile.SetSeed(settings);
-
+            SetColors();
             var calcThread = new Thread(new ThreadStart(Calculate));
             var renderThread = new Thread(new ThreadStart(Render));
             CancelCalcToken = new CancellationTokenSource();
             CancelDrawToken = new CancellationTokenSource();
             calcThread.Start();
             renderThread.Start();
+        }
+
+        private void SetColors()
+        {
+            colors = new[] {
+                Color0.SelectedColor.GetValueOrDefault(),
+                Color1.SelectedColor.GetValueOrDefault(),
+                Color2.SelectedColor.GetValueOrDefault(),
+                Color3.SelectedColor.GetValueOrDefault(),
+                Color4.SelectedColor.GetValueOrDefault(),
+                Color5.SelectedColor.GetValueOrDefault(),
+            };
         }
 
         private void Calculate()

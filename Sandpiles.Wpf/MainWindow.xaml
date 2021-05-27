@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:wpfx="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:Sandpiles.Wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="600"
@@ -31,6 +32,12 @@
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
             </Grid.RowDefinitions>
             <Button x:Name="StartButton" Grid.Column="0" Grid.Row="0" Height="20" Width="40" Click="StartButton_Click">Start</Button>
             <Button x:Name="StopButton" IsEnabled="False" Grid.Column="1" Grid.Row="0" Height="20" Width="40" Click="StopButton_Click">Stop</Button>
@@ -46,6 +53,18 @@
             <TextBox Grid.Column="1" Grid.Row="5" Name="seed">100000</TextBox>
             <Label Grid.Column="0" Grid.Row="6">Size:</Label>
             <TextBox Grid.Column="1" Grid.Row="6" Name="size">400</TextBox>
+            <Label Grid.Column="0" Grid.Row="7">Color 0:</Label>
+            <wpfx:ColorPicker x:Name="Color0" Grid.Column="1" Grid.Row="7" SelectedColor="Black"></wpfx:ColorPicker>
+            <Label Grid.Column="0" Grid.Row="8">Color 1:</Label>
+            <wpfx:ColorPicker x:Name="Color1" Grid.Column="1" Grid.Row="8" SelectedColor="Red"></wpfx:ColorPicker>
+            <Label Grid.Column="0" Grid.Row="9">Color 2:</Label>
+            <wpfx:ColorPicker x:Name="Color2" Grid.Column="1" Grid.Row="9" SelectedColor="Orange"></wpfx:ColorPicker>
+            <Label Grid.Column="0" Grid.Row="10">Color 3:</Label>
+            <wpfx:ColorPicker x:Name="Color3" Grid.Column="1" Grid.Row="10" SelectedColor="Yellow"></wpfx:ColorPicker>
+            <Label Grid.Column="0" Grid.Row="11">Color 4:</Label>
+            <wpfx:ColorPicker x:Name="Color4" Grid.Column="1" Grid.Row="11" SelectedColor="LightYellow"></wpfx:ColorPicker>
+            <Label Grid.Column="0" Grid.Row="12">Color 5:</Label>
+            <wpfx:ColorPicker x:Name="Color5" Grid.Column="1" Grid.Row="12" SelectedColor="White"></wpfx:ColorPicker>
         </Grid>
     </Grid>
 </Window>
