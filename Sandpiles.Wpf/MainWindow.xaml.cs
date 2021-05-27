@@ -22,15 +22,18 @@ namespace Sandpiles.Wpf
 
         private int Iteration = 0;
 
+        private CancellationTokenSource CancelDrawToken;
+        private CancellationTokenSource CancelCalcToken;
+
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             StartButton.IsEnabled = false;
-
+            StopButton.IsEnabled = true;
             var dimension = Convert.ToInt32(size.Text);
             DrawCanvas.Height = dimension;
             DrawCanvas.Width = dimension;
@@ -48,7 +51,8 @@ namespace Sandpiles.Wpf
 
             var calcThread = new Thread(new ThreadStart(Calculate));
             var renderThread = new Thread(new ThreadStart(Render));
-
+            CancelCalcToken = new CancellationTokenSource();
+            CancelDrawToken = new CancellationTokenSource();
             calcThread.Start();
             renderThread.Start();
         }
@@ -60,11 +64,14 @@ namespace Sandpiles.Wpf
             while (Pile.ToppleInPlace())
             {
                 Iteration++;
+                if (CancelCalcToken.IsCancellationRequested)
+                    break;
             };
             isCalculating = false;
             Dispatcher.Invoke(() =>
             {
                 StartButton.IsEnabled = true;
+                StopButton.IsEnabled = false;
             });
         }
 
@@ -77,37 +84,47 @@ namespace Sandpiles.Wpf
 
             while (isCalculating)
             {
-                frame++;
-                byte[] pixels = new byte[Pile.Width * Pile.Height * 4];
-                for (var x = 0; x < Pile.Width; x++)
-                {
-                    for (var y = 0; y < Pile.Height; y++)
-                    {
-                        var color = GetColor(Pile.Grid[x][y]);
-                        var offset = (4 * y) + (4 * x * Pile.Width);
-                        pixels[offset] = color.B;
-                        pixels[offset + 1] = color.G;
-                        pixels[offset + 2] = color.R;
-                        pixels[offset + 3] = color.A;
-                    }
-                }
+                if (CancelDrawToken.IsCancellationRequested)
+                    return;
 
+                lastIteration = Iteration;
+                frame++;
+                byte[] pixels = CalcPixelColors();
                 lock (Bitmap)
                 {
-                    var iterationsPerSecond = 1000 * (decimal)(Iteration - lastIteration) / intervalTime.ElapsedMilliseconds;
-                    var framespersecond = (decimal)1000 / intervalTime.ElapsedMilliseconds;
                     Dispatcher.Invoke(() =>
                     {
                         Bitmap.WritePixels(new Int32Rect(0, 0, Pile.Width - 1, Pile.Height - 1), pixels, Bitmap.BackBufferStride, 0, 0);
                         iterations.Content = Iteration;
                         time.Content = totalTime.Elapsed.ToString(@"hh\:mm\:ss\.fff");
+                        var iterationsPerSecond = 1000 * (decimal)(Iteration - lastIteration) / (intervalTime.ElapsedMilliseconds);
+                        var framespersecond = (decimal)1000 / (intervalTime.ElapsedMilliseconds);
                         ips.Content = iterationsPerSecond.ToString("0.000");
                         fps.Content = framespersecond.ToString("0.000");
                     });
                 }
-                lastIteration = Iteration;
+
                 intervalTime.Restart();
             }
+        }
+
+        private byte[] CalcPixelColors()
+        {
+            byte[] pixels = new byte[Pile.Width * Pile.Height * 4];
+            for (var x = 0; x < Pile.Width; x++)
+            {
+                for (var y = 0; y < Pile.Height; y++)
+                {
+                    var color = GetColor(Pile.Grid[x][y]);
+                    var offset = (4 * y) + (4 * x * Pile.Width);
+                    pixels[offset] = color.B;
+                    pixels[offset + 1] = color.G;
+                    pixels[offset + 2] = color.R;
+                    pixels[offset + 3] = color.A;
+                }
+            }
+
+            return pixels;
         }
 
         private static Color GetColor(int grains)
@@ -121,6 +138,12 @@ namespace Sandpiles.Wpf
                 4 => Color.FromRgb(255, 255, 127),
                 _ => Color.FromRgb(255, 255, 255),
             };
+        }
+
+        private void StopButton_Click(object sender, RoutedEventArgs e)
+        {
+            CancelCalcToken.Cancel();
+            CancelDrawToken.Cancel();
         }
     }
 }
