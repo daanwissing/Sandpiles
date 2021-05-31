@@ -41,7 +41,7 @@ namespace Sandpiles.Wpf
             var dimension = Convert.ToInt32(size.Text);
             DrawCanvas.Height = dimension;
             DrawCanvas.Width = dimension;
-            Bitmap = new WriteableBitmap(dimension, dimension, 96, 96, PixelFormats.Bgr32, null);
+            Bitmap = new WriteableBitmap(dimension, dimension, 96, 96, PixelFormats.Bgra32, null);
             DrawImg.Source = Bitmap;
             Pile = new SandPileGrid(dimension, dimension);
             var settings = new PileSettings
@@ -144,19 +144,6 @@ namespace Sandpiles.Wpf
             return pixels;
         }
 
-        private static Color GetColor(int grains)
-        {
-            return grains switch
-            {
-                0 => Color.FromRgb(0, 0, 0),
-                1 => Color.FromRgb(255, 0, 0),
-                2 => Color.FromRgb(255, 127, 0),
-                3 => Color.FromRgb(255, 255, 0),
-                4 => Color.FromRgb(255, 255, 127),
-                _ => Color.FromRgb(255, 255, 255),
-            };
-        }
-
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             CancelCalcToken.Cancel();
@@ -168,7 +155,7 @@ namespace Sandpiles.Wpf
             var dialog = new SaveFileDialog
             {
                 DefaultExt = ".png",
-                AddExtension = true,
+                Filter = "Portable Network Graphics|*.png|JPEG|*.jpeg",
                 Title = "Save sandpile image",
                 FileName = $"{DateTime.Now:yyyymmdd_hhMMss}_pile.png"
             };
@@ -177,7 +164,15 @@ namespace Sandpiles.Wpf
             {
                 using (var stream = File.OpenWrite(dialog.FileName))
                 {
-                    var encoder = new PngBitmapEncoder();
+                    BitmapEncoder encoder;
+                    if (dialog.FilterIndex == 1)
+                    {
+                        encoder = new PngBitmapEncoder();
+                    }
+                    else
+                    {
+                        encoder = new JpegBitmapEncoder();
+                    }
                     encoder.Frames.Add(BitmapFrame.Create(Bitmap));
                     encoder.Save(stream);
                 }
