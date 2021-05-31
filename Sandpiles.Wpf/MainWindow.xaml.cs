@@ -1,6 +1,8 @@
-﻿using Sandpiles.Calc;
+﻿using Microsoft.Win32;
+using Sandpiles.Calc;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
@@ -35,6 +37,7 @@ namespace Sandpiles.Wpf
         {
             StartButton.IsEnabled = false;
             StopButton.IsEnabled = true;
+            SaveButton.IsEnabled = false;
             var dimension = Convert.ToInt32(size.Text);
             DrawCanvas.Height = dimension;
             DrawCanvas.Width = dimension;
@@ -84,6 +87,7 @@ namespace Sandpiles.Wpf
             Dispatcher.Invoke(() =>
             {
                 StartButton.IsEnabled = true;
+                SaveButton.IsEnabled = true;
                 StopButton.IsEnabled = false;
             });
         }
@@ -157,6 +161,27 @@ namespace Sandpiles.Wpf
         {
             CancelCalcToken.Cancel();
             CancelDrawToken.Cancel();
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new SaveFileDialog
+            {
+                DefaultExt = ".png",
+                AddExtension = true,
+                Title = "Save sandpile image",
+                FileName = $"{DateTime.Now:yyyymmdd_hhMMss}_pile.png"
+            };
+            var result = dialog.ShowDialog();
+            if (result == true)
+            {
+                using (var stream = File.OpenWrite(dialog.FileName))
+                {
+                    var encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(Bitmap));
+                    encoder.Save(stream);
+                }
+            }
         }
     }
 }
